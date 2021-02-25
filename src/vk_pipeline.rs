@@ -4,7 +4,7 @@ use std::{
     mem::{self, align_of},
 };
 
-use crate::{renderer::*, offset_of, APP_NAME, WINDOW_SIZE, Vectors::*};
+use crate::{renderer::*, offset_of, APP_NAME, WINDOW_SIZE, vectors::*};
 use ash::{
     util::{read_spv, Align},
     version::DeviceV1_0,
