@@ -4,13 +4,13 @@ use std::{
     mem::{self, align_of},
 };
 
-use crate::{renderer::*, offset_of, APP_NAME, WINDOW_SIZE};
+use crate::{offset_of, renderer::*, APP_NAME, WINDOW_SIZE};
 use ash::{
     util::{read_spv, Align},
     version::DeviceV1_0,
     vk,
 };
-use glam::{Vec2, Vec3, Vec4, vec4};
+use glam::{vec4, Vec2, Vec3, Vec4};
 use winit::{
     dpi::{LogicalSize, PhysicalSize},
     event::{Event, KeyboardInput, VirtualKeyCode, WindowEvent},
@@ -165,7 +165,7 @@ pub fn create_pipeline() {
             .unwrap();
 
         let uniform_color_buffer_data = Vec3::new(1.0, 1.0, 1.0);
-        
+
         let uniform_color_buffer_info = vk::BufferCreateInfo {
             size: std::mem::size_of_val(&uniform_color_buffer_data) as u64,
             usage: vk::BufferUsageFlags::UNIFORM_BUFFER,
