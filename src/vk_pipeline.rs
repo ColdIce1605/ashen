@@ -10,7 +10,7 @@ use ash::{
     version::DeviceV1_0,
     vk,
 };
-use glam::{Vec3, Vec4, vec4};
+use glam::{Vec2, Vec3, Vec4, vec4};
 use winit::{
     dpi::{LogicalSize, PhysicalSize},
     event::{Event, KeyboardInput, VirtualKeyCode, WindowEvent},
@@ -21,8 +21,8 @@ use winit::{
 #[derive(Clone, Debug, Copy)]
 pub struct Vertex {
     pos: Vec4,
-    uv: [f32; 2],
-    color: [f32; 4],
+    uv: Vec2,
+    color: Vec4,
 }
 
 pub fn create_pipeline() {
@@ -95,23 +95,23 @@ pub fn create_pipeline() {
         let vertices = [
             Vertex {
                 pos: Vec4::new(-1.0, -1.0, 0.0, 1.0),
-                uv: [0.0, 0.0],
-                color: [1.0, 1.0, 1.0, 1.0],
+                uv: Vec2::new(0.0, 0.0),
+                color: Vec4::new(1.0, 1.0, 1.0, 1.0),
             },
             Vertex {
                 pos: Vec4::new(-1.0, 1.0, 0.0, 1.0),
-                uv: [0.0, 1.0],
-                color: [1.0, 1.0, 1.0, 1.0],
+                uv: Vec2::new(0.0, 1.0),
+                color: Vec4::new(1.0, 1.0, 1.0, 1.0),
             },
             Vertex {
                 pos: Vec4::new(1.0, 1.0, 0.0, 1.0),
-                uv: [1.0, 1.0],
-                color: [1.0, 1.0, 1.0, 1.0],
+                uv: Vec2::new(1.0, 1.0),
+                color: Vec4::new(1.0, 1.0, 1.0, 1.0),
             },
             Vertex {
                 pos: Vec4::new(1.0, -1.0, 0.0, 1.0),
-                uv: [1.0, 0.0],
-                color: [1.0, 1.0, 1.0, 1.0],
+                uv: Vec2::new(1.0, 0.0),
+                color: Vec4::new(1.0, 1.0, 1.0, 1.0),
             },
         ];
         let vertex_input_buffer_info = vk::BufferCreateInfo {
@@ -165,11 +165,7 @@ pub fn create_pipeline() {
             .unwrap();
 
         let uniform_color_buffer_data = Vec3::new(1.0, 1.0, 1.0);
-       /*      x: 1.0,
-            y: 1.0,
-            z: 1.0,
-            _pad: 0.0,
-        };*/
+        
         let uniform_color_buffer_info = vk::BufferCreateInfo {
             size: std::mem::size_of_val(&uniform_color_buffer_data) as u64,
             usage: vk::BufferUsageFlags::UNIFORM_BUFFER,
