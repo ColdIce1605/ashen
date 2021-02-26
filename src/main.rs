@@ -1,5 +1,4 @@
 mod renderer;
-mod vectors;
 mod vk_pipeline;
 
 use vk_pipeline::create_pipeline;

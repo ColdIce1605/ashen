@@ -4,12 +4,13 @@ use std::{
     mem::{self, align_of},
 };
 
-use crate::{renderer::*, offset_of, APP_NAME, WINDOW_SIZE, vectors::*};
+use crate::{renderer::*, offset_of, APP_NAME, WINDOW_SIZE};
 use ash::{
     util::{read_spv, Align},
     version::DeviceV1_0,
     vk,
 };
+use glam::{Vec3, Vec4, vec4};
 use winit::{
     dpi::{LogicalSize, PhysicalSize},
     event::{Event, KeyboardInput, VirtualKeyCode, WindowEvent},
@@ -19,7 +20,7 @@ use winit::{
 
 #[derive(Clone, Debug, Copy)]
 pub struct Vertex {
-    pos: [f32; 4],
+    pos: Vec4,
     uv: [f32; 2],
     color: [f32; 4],
 }
@@ -93,22 +94,22 @@ pub fn create_pipeline() {
 
         let vertices = [
             Vertex {
-                pos: [-1.0, -1.0, 0.0, 1.0],
+                pos: Vec4::new(-1.0, -1.0, 0.0, 1.0),
                 uv: [0.0, 0.0],
                 color: [1.0, 1.0, 1.0, 1.0],
             },
             Vertex {
-                pos: [-1.0, 1.0, 0.0, 1.0],
+                pos: Vec4::new(-1.0, 1.0, 0.0, 1.0),
                 uv: [0.0, 1.0],
                 color: [1.0, 1.0, 1.0, 1.0],
             },
             Vertex {
-                pos: [1.0, 1.0, 0.0, 1.0],
+                pos: Vec4::new(1.0, 1.0, 0.0, 1.0),
                 uv: [1.0, 1.0],
                 color: [1.0, 1.0, 1.0, 1.0],
             },
             Vertex {
-                pos: [1.0, -1.0, 0.0, 1.0],
+                pos: Vec4::new(1.0, -1.0, 0.0, 1.0),
                 uv: [1.0, 0.0],
                 color: [1.0, 1.0, 1.0, 1.0],
             },
@@ -163,12 +164,12 @@ pub fn create_pipeline() {
             .bind_buffer_memory(vertex_input_buffer, vertex_input_buffer_memory, 0)
             .unwrap();
 
-        let uniform_color_buffer_data = Vector3 {
-            x: 1.0,
+        let uniform_color_buffer_data = Vec3::new(1.0, 1.0, 1.0);
+       /*      x: 1.0,
             y: 1.0,
             z: 1.0,
             _pad: 0.0,
-        };
+        };*/
         let uniform_color_buffer_info = vk::BufferCreateInfo {
             size: std::mem::size_of_val(&uniform_color_buffer_data) as u64,
             usage: vk::BufferUsageFlags::UNIFORM_BUFFER,
@@ -209,7 +210,7 @@ pub fn create_pipeline() {
             .unwrap();
         let mut uniform_aligned_slice = Align::new(
             uniform_ptr,
-            align_of::<Vector3>() as u64,
+            align_of::<Vec3>() as u64,
             uniform_color_buffer_memory_req.size,
         );
         uniform_aligned_slice.copy_from_slice(&[uniform_color_buffer_data]);
