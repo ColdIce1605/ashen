@@ -461,7 +461,7 @@ impl Renderer {
 
     pub fn render_texture(
         &mut self,
-        descriptor_sets: &Vec<vk::DescriptorSet>,
+        descriptor_sets: &[vk::DescriptorSet],
         graphics_pipeline: vk::Pipeline,
         index_buffer: vk::Buffer,
         index_buffer_data: [u32; 6],
@@ -833,7 +833,7 @@ fn create_command_buffers(
 
 fn create_image_views(
     device: &Device,
-    present_images: &Vec<vk::Image>,
+    present_images: &[vk::Image],
     surface_format: vk::SurfaceFormatKHR,
 ) -> Vec<vk::ImageView> {
     let present_image_views = present_images
@@ -991,7 +991,7 @@ fn create_framebuffers(
     depth_image_view: vk::ImageView,
     device: &Device,
     extent: vk::Extent2D,
-    present_image_views: &Vec<vk::ImageView>,
+    present_image_views: &[vk::ImageView],
     renderpass: vk::RenderPass,
 ) -> Vec<vk::Framebuffer> {
     let framebuffers: Vec<vk::Framebuffer> = present_image_views

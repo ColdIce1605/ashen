@@ -10,7 +10,7 @@ use ash::{
     version::DeviceV1_0,
     vk,
 };
-use glam::{vec4, Vec2, Vec3, Vec4};
+use glam::{Vec2, Vec3, Vec4};
 use winit::{
     dpi::{LogicalSize, PhysicalSize},
     event::{Event, KeyboardInput, VirtualKeyCode, WindowEvent},
