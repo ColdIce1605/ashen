@@ -1,3 +1,4 @@
+mod camera;
 mod renderer;
 mod vk_pipeline;
 
