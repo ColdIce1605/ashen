@@ -14,6 +14,8 @@ use std::default::Default;
 use std::ffi::{CStr, CString};
 use std::ops::Drop;
 
+use crate::{WINDOW_SIZE, camera::Camera};
+
 // Simple offset_of macro akin to C++ offsetof
 #[macro_export]
 macro_rules! offset_of {
@@ -179,6 +181,7 @@ impl Renderer {
     pub fn new(window: &Window, screen_resolution: vk::Extent2D) -> Self {
         let entry = Entry::new().unwrap();
         let instance: Instance = create_instance(&entry, window);
+        //let camera: Camera = Camera::new(WINDOW_SIZE[0] as f32 / WINDOW_SIZE[1] as f32, 75.0, 0.1, 10.0);
         let (debug_utils_loader, debug_call_back) = create_debug_utils(&entry, &instance);
 
         let surface_loader = Surface::new(&entry, &instance);
@@ -630,7 +633,7 @@ fn create_instance(entry: &Entry, window: &Window) -> Instance {
         .application_version(0)
         .engine_name(&app_name)
         .engine_version(0)
-        .api_version(vk::make_version(1, 0, 0));
+        .api_version(vk::make_version(1, 1, 0));
 
     let create_info = vk::InstanceCreateInfo::builder()
         .application_info(&appinfo)
