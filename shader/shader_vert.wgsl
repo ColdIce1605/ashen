@@ -1,7 +1,8 @@
 [[stage(vertex)]]
 
-fn main([[builtin(vertex_index)]] in_vertex_index: u32) -> [[builtin(position)]] vec4<f32> {
-    const x = f32(i32(in_vertex_index) - 1);
-    const y = f32(i32(in_vertex_index & 1u) * 2 - 1);
-    return vec4<f32>(x, y, 0.0, 1.0);
+fn main(
+    [[location(0)]] a_position: vec3<f32>,
+    [[location(1)]] a_color: vec3<f32>,
+) -> [[builtin(position)]] vec4<f32> {
+    return vec4<f32>(a_position, 1.0);
 }
