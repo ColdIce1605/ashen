@@ -2,6 +2,7 @@ mod camera;
 mod renderer;
 mod pipeline;
 
+use std::borrow::Cow;
 use winit::{
     event::*,
     event_loop::{ControlFlow, EventLoop},
@@ -58,12 +59,12 @@ impl State {
 
         let vs_module = device.create_shader_module(&wgpu::ShaderModuleDescriptor {
             label: Some("Vertex Shader"),
-            source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(include_str!("../shader/shader.vert"))),
+            source: wgpu::ShaderSource::Glsl(Cow::Borrowed(include_str!("../shader/shader.vert"))),
             flags: wgpu::ShaderFlags::default(),
         });
         let fs_module = device.create_shader_module(&wgpu::ShaderModuleDescriptor {
             label: Some("Fragment Shader"),
-            source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(include_str!("../shader/shader.frag"))),
+            source: wgpu::ShaderSource::Glsl(Cow::Borrowed(include_str!("../shader/shader.frag"))),
             flags: wgpu::ShaderFlags::default(),
         });
 
@@ -86,8 +87,8 @@ impl State {
                     module: &fs_module,
                     entry_point: "main",
                     targets: &[wgpu::ColorTargetState { // 4.
-                        format: sc_desc.format,
-                        blend: wgpu::BlendState::REPLACE,
+                        format: swap_chain_desc.format,
+                        blend: Some(wgpu::BlendState::REPLACE),
                         write_mask: wgpu::ColorWrite::ALL,
                     }],
                 }),
@@ -95,7 +96,7 @@ impl State {
                     topology: wgpu::PrimitiveTopology::TriangleList, // 1.
                     strip_index_format: None,
                     front_face: wgpu::FrontFace::Ccw, // 2.
-                    cull_mode: wgpu::CullMode::Back,
+                    cull_mode: Some(wgpu::Face::Back),
                     // Setting this to anything other than Fill requires Features::NON_FILL_POLYGON_MODE
                     polygon_mode: wgpu::PolygonMode::Fill,
                     clamp_depth: false,
