@@ -9,9 +9,17 @@ struct VertexOutput {
 };
 
 [[stage(vertex)]]
-fn main(in: VertexInput) -> VertexOutput {
+fn main_vs(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
     out.v_color = in.a_color;
     out.position = vec4<f32>(in.a_position, 1.0);
     return out;
+}
+
+
+
+[[stage(fragment)]]
+fn main_fs(in: VertexOutput) -> [[location(0)]] vec4<f32>  {
+    var f_color: vec4<f32> = vec4<f32>(in.v_color, 1.0);
+    return f_color;
 }
