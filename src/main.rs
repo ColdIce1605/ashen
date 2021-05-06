@@ -1,7 +1,7 @@
 mod camera;
-mod texture;
 mod pipeline;
 mod renderer;
+mod texture;
 
 use camera::Camera;
 use futures::executor::block_on;
@@ -40,6 +40,7 @@ struct State {
     instances: Vec<Instance>,
     #[allow(dead_code)]
     instance_buffer: wgpu::Buffer,
+    depth_texture: texture::Texture,
 }
 
 const NUM_INSTANCES_PER_ROW: u32 = 10;
@@ -321,6 +322,9 @@ impl State {
         let diffuse_texture =
             texture::Texture::from_bytes(&device, &queue, diffuse_bytes, "test.png").unwrap();
 
+        let depth_texture =
+            texture::Texture::create_depth_texture(&device, &swap_chain_desc, "depth_texture");
+
         let texture_bind_group_layout =
             device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
                 entries: &[
@@ -385,24 +389,14 @@ impl State {
         let instances = (0..NUM_INSTANCES_PER_ROW)
             .flat_map(|z| {
                 (0..NUM_INSTANCES_PER_ROW).map(move |x| {
-                    let position = glam::vec3(
-                        x as f32,
-                        0.0,
-                        z as f32,
-                    ) - INSTANCE_DISPLACEMENT;
+                    let position = glam::vec3(x as f32, 0.0, z as f32) - INSTANCE_DISPLACEMENT;
 
                     let rotation = if position == glam::vec3(0.0, 0.0, 0.0) {
                         // this is needed so an object at (0, 0, 0) won't get scaled to zero
                         // as Quaternions can effect scale if they're not created correctly
-                        glam::Quat::from_axis_angle(
-                            glam::Vec3::Z,
-                            0.0,
-                        )
+                        glam::Quat::from_axis_angle(glam::Vec3::Z, 0.0)
                     } else {
-                        glam::Quat::from_axis_angle(
-                            position.clone().normalize(),
-                            45.0,
-                        )
+                        glam::Quat::from_axis_angle(position.clone().normalize(), 45.0)
                     };
 
                     Instance { position, rotation }
@@ -486,7 +480,13 @@ impl State {
                 // Requires Features::CONSERVATIVE_RASTERIZATION
                 conservative: false,
             },
-            depth_stencil: None,
+            depth_stencil: Some(wgpu::DepthStencilState {
+                format: texture::Texture::DEPTH_FORMAT,
+                depth_write_enabled: true,
+                depth_compare: wgpu::CompareFunction::Less,
+                stencil: wgpu::StencilState::default(),
+                bias: wgpu::DepthBiasState::default(),
+            }),
             multisample: wgpu::MultisampleState {
                 count: 1,
                 mask: !0,
@@ -526,6 +526,7 @@ impl State {
             uniforms,
             instances,
             instance_buffer,
+            depth_texture,
         }
     }
 
@@ -533,9 +534,16 @@ impl State {
         self.size = new_size;
         self.swap_chain_desc.width = new_size.width;
         self.swap_chain_desc.height = new_size.height;
-        self.swap_chain = self.device.create_swap_chain(&self.surface, &self.swap_chain_desc);
+        self.swap_chain = self
+            .device
+            .create_swap_chain(&self.surface, &self.swap_chain_desc);
 
         self.camera.aspect = self.swap_chain_desc.width as f32 / self.swap_chain_desc.height as f32;
+        self.depth_texture = texture::Texture::create_depth_texture(
+            &self.device,
+            &self.swap_chain_desc,
+            "depth_texture",
+        );
     }
 
     fn input(&mut self, event: &WindowEvent) -> bool {
@@ -577,7 +585,14 @@ impl State {
                         store: true,
                     },
                 }],
-                depth_stencil_attachment: None,
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: &self.depth_texture.view,
+                    depth_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(1.0),
+                        store: true,
+                    }),
+                    stencil_ops: None,
+                }),
             });
 
             render_pass.set_pipeline(&self.render_pipeline);
