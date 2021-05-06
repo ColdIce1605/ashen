@@ -113,12 +113,12 @@ struct Uniforms {
 impl Uniforms {
     fn new() -> Self {
         Self {
-            view_proj: Mat4::IDENTITY.into(),
+            view_proj: Mat4::IDENTITY,
         }
     }
 
     fn update_view_proj(&mut self, camera: &Camera) {
-        self.view_proj = camera.build_view_projection_matrix().into();
+        self.view_proj = camera.build_view_projection_matrix();
     }
 }
 
@@ -521,9 +521,9 @@ impl State {
             diffuse_bind_group,
             camera,
             camera_controller,
+            uniforms,
             uniform_buffer,
             uniform_bind_group,
-            uniforms,
             instances,
             instance_buffer,
             depth_texture,
